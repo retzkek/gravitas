@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ld30</title>
+    
+    <script async type="application/dart" src="gravitas.dart"></script>
+    <script async src="packages/browser/dart.js"></script>
+    
+    <link rel="stylesheet" href="gravitas.css">
+  </head>
+  <body>
+    <h1>Gravitas is Srs Bsns</h1>
+    
+   <div id="game">
+      <canvas id="canvas" height="400" width="400" class="center"></canvas>
+      <form class="center">
+        <span>Angle</span>
+        <input id="angleSlider" type="range" max="360" value="0"/>
+        <span id="angleSpan">0</span>
+        <br/>
+        <span>Speed</span>
+        <input id="speedSlider" type="range" max="100" value="50"/>
+        <span id="speedSpan">50</span>
+        <hr/>
+        <span>Simulation Speed</span>
+        <input id="simulationSpeedSlider" type="range" min="-20" max="20" value="1"/>
+        <span id="simulationSpeedSpan">1</span>
+      </form>
+    </div>
+
+  </body>
+</html>
