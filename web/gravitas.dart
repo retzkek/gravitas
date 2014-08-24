@@ -13,6 +13,11 @@ final DivElement game = (querySelector('#game') as DivElement);
 final CanvasRenderingContext2D context = (querySelector("#canvas") as CanvasElement).context2D;
 final InputElement simulationSpeedSlider = querySelector("#simulationSpeedSlider");
 final Element simulationSpeedSpan = querySelector("#simulationSpeedSpan");
+final InputElement speedSlider = querySelector("#speedSlider");
+final Element speedSpan = querySelector("#speedSpan");
+final InputElement angleSlider = querySelector("#angleSlider");
+final Element angleSpan = querySelector("#angleSpan");
+final ButtonElement fireButton = querySelector("#fireButton");
 
 Board board;
 
@@ -178,12 +183,45 @@ class GravitationalBody extends Body {
   }
 }
 
+class LauncherBody extends OrbitalBody {
+  /* LauncherBody is an orbital planet that includes functionality for firing ze missiles!
+   */
+  num launchAzimuth = 0.0; // rad
+  num launchSpeed = 50; // m/s?
+  GravitationalBody missile;
+  static const num launcherLength = 15;
+  
+  LauncherBody(Body primary, num or, num az, num s, num size) : super(primary, or, az, s, size);
+  
+  GravitationalBody fireZeMissile() {
+    missile = new GravitationalBody.xyr(location.x, location.y, 2)
+      ..velocity.x = launchSpeed*cos(launchAzimuth)
+      ..velocity.y = launchSpeed*sin(launchAzimuth);
+    
+    return missile;
+  }
+  
+  void draw(CanvasRenderingContext2D context) {
+    context
+        ..beginPath()
+        ..lineWidth = 10
+        ..strokeStyle = "grey"
+        ..moveTo(context.canvas.width/2+location.x, context.canvas.height/2+location.y)
+        ..lineTo(context.canvas.width/2 + location.x + (size + launcherLength)*cos(launchAzimuth),
+            context.canvas.height/2 + location.y + (size + launcherLength)*sin(launchAzimuth))
+        ..stroke();
+    super.draw(context);
+  }
+  
+}
+
 class Board {
   /* Board contains and controls the state of a single game board.
    */
   Body sun = new Body();
   var planets = new List<OrbitalBody>(); // planets react ony to the sun, but not each other
   var projectiles = new List<GravitationalBody>(); // projectiles react to the sun and planets
+  LauncherBody player;
   
   num simulationSpeed = 1.0;
 
@@ -191,7 +229,8 @@ class Board {
     sun.size = 40;
     sun.density = 5;
     
-    planets.add(new OrbitalBody(sun, 100, 0,      1, 10));
+    player = new LauncherBody(sun, 100, 0,      1, 10);
+    
     planets.add(new OrbitalBody(sun, 150, 0.8*PI, 1, 10));
     planets.add(new OrbitalBody(sun, 200, 1.4*PI, 3, 15));
     OrbitalBody b = new OrbitalBody(sun, 300, 1.4*PI, 1, 10);
@@ -207,32 +246,52 @@ class Board {
       ..density = 50
       ..haveOrbit(sun);
     projectiles.add(comet);
+    
+    fireButton.onClick.listen(onFire);
   }
 
   void render() {
+    // get client inputs
     simulationSpeed = simulationSpeedSlider.valueAsNumber;
+    num speed = speedSlider.valueAsNumber;
+    player.launchSpeed = speed;
+    num angleDeg = angleSlider.valueAsNumber;
+    player.launchAzimuth = angleDeg * PI / 180.0;
     
+    // draw board
     context.fillStyle = "black";
     context.fillRect(0,  0,  context.canvas.width,  context.canvas.height);
+    
+    // draw bodies
     sun.draw(context);
+    
+    player.update(simulationSpeed);
+    player.draw(context);
     
     planets.forEach((b) {
       b.update(simulationSpeed);
       b.draw(context);
     });
     
-    var sunAndPlanets = new List<Body>();
-    sunAndPlanets.add(sun);
-    sunAndPlanets.addAll(planets);
+    var sunAndPlanets = new List<Body>()
+      ..add(sun)
+      ..add(player)
+      ..addAll(planets);
     projectiles.forEach((b) {
       b.update(sunAndPlanets, simulationSpeed);
       b.draw(context);
     });
     
+    // update client text
     simulationSpeedSpan.text = '$simulationSpeed';
+    speedSpan.text = '$speed';
+    angleSpan.text = '$angleDeg';
 
   }
   
+  void onFire(Event e) {
+    projectiles.add(player.fireZeMissile());
+  }
 }
 
 void animate(num time) {
@@ -252,7 +311,7 @@ void main() {
   animate(0);
 }
 
-onWindowResize(event) {
+void onWindowResize(Event e) {
   reshape();
 }
 
