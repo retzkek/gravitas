@@ -18,6 +18,7 @@ final Element speedSpan = querySelector("#speedSpan");
 final InputElement angleSlider = querySelector("#angleSlider");
 final Element angleSpan = querySelector("#angleSpan");
 final ButtonElement fireButton = querySelector("#fireButton");
+final ButtonElement resetButton = querySelector("#resetButton");
 
 Board board;
 
@@ -248,6 +249,7 @@ class Board {
     projectiles.add(comet);
     
     fireButton.onClick.listen(onFire);
+    resetButton.onClick.listen(onReset);
   }
 
   void render() {
@@ -291,6 +293,10 @@ class Board {
   
   void onFire(Event e) {
     projectiles.add(player.fireZeMissile());
+  }
+  
+  void onReset(Event e) {
+    projectiles.clear();
   }
 }
 
