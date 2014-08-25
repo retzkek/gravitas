@@ -40,11 +40,9 @@ class Board {
     planets.add(new OrbitalBody(b, 40, PI, 1.0, 3));
     
     GravitationalBody comet = new GravitationalBody.xyr(150, -150, 2)
-      ..density = 50
       ..haveOrbit(sun);
     projectiles.add(comet);
     comet = new GravitationalBody.xyr(-150, 150, 2)
-      ..density = 50
       ..haveOrbit(sun);
     projectiles.add(comet);
     
