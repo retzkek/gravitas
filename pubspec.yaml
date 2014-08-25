@@ -1,4 +1,7 @@
 name: gravitas
-description: A sample web application
+version: 0.1.0
+author: Kevin M. Retzke
+description: LD30-inspired game (not actually entered)
+homepage: http://kmr.me
 dependencies:
   browser: any
